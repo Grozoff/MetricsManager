@@ -11,5 +11,16 @@ namespace MetricsManager.Controllers
     [ApiController]
     public class RamMetricsController : ControllerBase
     {
+        [HttpGet("available/agent/{agentId}")]
+        public IActionResult GetMetricsFromAgent([FromRoute] int agentId)
+        {
+            return Ok();
+        }
+
+        [HttpGet("available/cluster")]
+        public IActionResult GetMetricsFromAllCluster()
+        {
+            return Ok();
+        }
     }
 }
