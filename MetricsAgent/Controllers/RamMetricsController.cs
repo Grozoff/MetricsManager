@@ -11,5 +11,10 @@ namespace MetricsAgent.Controllers
     [ApiController]
     public class RamMetricsController : ControllerBase
     {
+        [HttpGet("available")]
+        public IActionResult GetAvailableMemorySpace()
+        {
+            return Ok();
+        }
     }
 }

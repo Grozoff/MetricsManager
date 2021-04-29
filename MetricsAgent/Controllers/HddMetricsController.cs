@@ -11,5 +11,10 @@ namespace MetricsAgent.Controllers
     [ApiController]
     public class HddMetricsController : ControllerBase
     {
+        [HttpGet("left")]
+        public IActionResult GetLeftSpace()
+        {
+            return Ok();
+        }
     }
 }
