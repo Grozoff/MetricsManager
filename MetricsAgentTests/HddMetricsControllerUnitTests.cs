@@ -20,9 +20,11 @@ namespace MetricsManagerTests
         public void GetLeftSpace_ReturnsOk()
         {
             //Arrange
+            var fromTime = TimeSpan.FromSeconds(0);
+            var toTime = TimeSpan.FromSeconds(100);
 
             //Act
-            var result = controller.GetLeftSpace();
+            var result = controller.GetLeftSpace(fromTime, toTime);
 
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);

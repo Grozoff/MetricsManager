@@ -12,13 +12,13 @@ namespace MetricsManager.Controllers
     public class RamMetricsController : ControllerBase
     {
         [HttpGet("available/agent/{agentId}")]
-        public IActionResult GetMetricsFromAgent([FromRoute] int agentId)
+        public IActionResult GetMetricsFromAgent([FromRoute] int agentId, [FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
         {
             return Ok();
         }
 
         [HttpGet("available/cluster")]
-        public IActionResult GetMetricsFromAllCluster()
+        public IActionResult GetMetricsFromAllCluster([FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
         {
             return Ok();
         }

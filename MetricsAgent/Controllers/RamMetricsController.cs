@@ -12,7 +12,7 @@ namespace MetricsAgent.Controllers
     public class RamMetricsController : ControllerBase
     {
         [HttpGet("available")]
-        public IActionResult GetAvailableMemorySpace()
+        public IActionResult GetAvailableMemorySpace([FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
         {
             return Ok();
         }
