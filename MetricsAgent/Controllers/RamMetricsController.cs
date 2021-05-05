@@ -26,7 +26,7 @@ namespace MetricsAgent.Controllers
         }
 
         [HttpGet("available/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetAvailableMemorySpace([FromRoute] HddMetricRequest request)
+        public IActionResult GetMetrics([FromRoute] RamMetricRequest request)
         {
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
             var response = new RamMetricsByTimePeriodResponse()

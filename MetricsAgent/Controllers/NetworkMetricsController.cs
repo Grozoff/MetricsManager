@@ -26,7 +26,7 @@ namespace MetricsAgent.Controllers
         }
 
         [HttpGet("from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetrics([FromRoute] HddMetricRequest request)
+        public IActionResult GetMetrics([FromRoute] NetworkMetricRequest request)
         {
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
             var response = new NetworkMetricsByTimePeriodResponse()

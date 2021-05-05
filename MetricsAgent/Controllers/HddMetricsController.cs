@@ -26,7 +26,7 @@ namespace MetricsAgent.Controllers
         }
 
         [HttpGet("left/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetLeftSpace([FromRoute] HddMetricRequest request)
+        public IActionResult GetMetrics([FromRoute] HddMetricRequest request)
         {
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
             var response = new HddMetricsByTimePeriodResponse()
