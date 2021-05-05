@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.DAL.Interfaces
 {
-    public interface INetworkMetricsRepository : IRepository<CpuMetric>
+    public interface INetworkMetricsRepository : IRepository<NetworkMetric>
     {
     }
 }
