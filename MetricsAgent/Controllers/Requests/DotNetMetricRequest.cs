@@ -12,6 +12,10 @@ namespace MetricsAgent.Controllers.Requests
             FromTime = fromTime;
             ToTime = toTime;
         }
+        public DotNetMetricRequest()
+        {
+
+        }
 
         public DateTimeOffset FromTime { get; set; }
         public DateTimeOffset ToTime { get; set; }

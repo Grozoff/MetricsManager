@@ -13,6 +13,11 @@ namespace MetricsAgent.Controllers.Requests
             ToTime = toTime;
         }
 
+        public CpuMetricRequest()
+        {
+
+        }
+
         public DateTimeOffset FromTime { get; set; }
         public DateTimeOffset ToTime { get; set; }
     }
