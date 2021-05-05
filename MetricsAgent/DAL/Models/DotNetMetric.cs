@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.DAL.Models
 {
-    public class DotnetMetric
+    public class DotNetMetric
     {
         public int Id { get; set; }
         public long Time { get; set; }
