@@ -4,19 +4,59 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data.SQLite;
 
 namespace MetricsAgent.DAL.Repository
 {
-    public class HddMetricsRepository : ICpuMetricsRepository
+    public class HddMetricsRepository : IHddMetricsRepository
     {
-        public void Create(CpuMetric item)
+        private readonly SQLliteConnection _connection;
+
+        public HddMetricsRepository(SQLliteConnection connection)
         {
-            throw new NotImplementedException();
+            _connection = connection;
         }
 
-        public IList<CpuMetric> GetByTimePeriod(DateTimeOffset from, DateTimeOffset to)
+        public void Create(HddMetric item)
         {
-            throw new NotImplementedException();
+            using var connection = _connection.Connect();
+            using var cmd = new SQLiteCommand(connection);
+            cmd.CommandText = "INSERT INTO hddmetrics(value, time) VALUES(@value, @time)";
+            cmd.Parameters.AddWithValue("@value", item.Value);
+            cmd.Parameters.AddWithValue("@time", item.Time);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+        }
+
+        public IList<HddMetric> GetByTimePeriod(DateTimeOffset from, DateTimeOffset to)
+        {
+            var fromSeconds = from.ToUnixTimeSeconds();
+            var toSeconds = to.ToUnixTimeSeconds();
+
+            using var connection = _connection.Connect();
+            using var cmd = new SQLiteCommand(connection);
+            cmd.CommandText = "SELECT * FROM hddmetrics WHERE (time > @fromTime) and (time < @toTime)";
+            cmd.Parameters.AddWithValue("@fromTime", fromSeconds);
+            cmd.Parameters.AddWithValue("@toTime", toSeconds);
+            cmd.Prepare();
+
+            connection.Open();
+
+            var returnList = new List<HddMetric>();
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                returnList.Add(new HddMetric()
+                {
+                    Id = reader.GetInt32(0),
+                    Value = reader.GetInt32(1),
+                    Time = reader.GetInt64(2)
+                });
+            }
+            connection.Close();
+
+            return returnList.Count > 0 ? returnList : null;
         }
     }
 }
