@@ -20,8 +20,8 @@ namespace MetricsManagerTests
         public void GetLeftSpace_ReturnsOk()
         {
             //Arrange
-            var fromTime = TimeSpan.FromSeconds(0);
-            var toTime = TimeSpan.FromSeconds(100);
+            var fromTime = DateTimeOffset.FromUnixTimeSeconds(0);
+            var toTime = DateTimeOffset.FromUnixTimeSeconds(100);
 
             //Act
             var result = controller.GetLeftSpace(fromTime, toTime);
