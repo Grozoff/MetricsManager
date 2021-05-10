@@ -10,9 +10,9 @@ namespace MetricsAgent.DAL.Repository
 {
     public class RamMetricsRepository : IRamMetricsRepository
     {
-        private readonly SQLliteConnection _connection;
+        private readonly SQLiteConnectionFactory _connection;
 
-        public RamMetricsRepository(SQLliteConnection connection)
+        public RamMetricsRepository(SQLiteConnectionFactory connection)
         {
             _connection = connection;
         }
@@ -56,7 +56,7 @@ namespace MetricsAgent.DAL.Repository
             }
             connection.Close();
 
-            return returnList.Count > 0 ? returnList : null;
+            return returnList;
         }
     }
 }

@@ -10,16 +10,15 @@ namespace MetricsAgent.DAL.Repository
 {
     public class DotNetMetricsRepository : IDotNetMetricsRepository
     {
-        private readonly SQLliteConnection _connection;
+        private readonly SQLiteConnectionFactory _connection;
 
-        public DotNetMetricsRepository(SQLliteConnection connection)
+        public DotNetMetricsRepository(SQLiteConnectionFactory connection)
         {
             _connection = connection;
         }
 
         public void Create(DotNetMetric item)
         {
-
             using var connection = _connection.Connect();
             using var cmd = new SQLiteCommand(connection);
             cmd.CommandText = "INSERT INTO dotnetmetrics(value, time) VALUES(@value, @time)";
@@ -57,7 +56,7 @@ namespace MetricsAgent.DAL.Repository
             }
             connection.Close();
 
-            return returnList.Count > 0 ? returnList : null;
+            return returnList;
         }
     }
 }
