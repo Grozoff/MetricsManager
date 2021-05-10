@@ -31,20 +31,21 @@ namespace MetricsAgent.Controllers
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
             var response = new DotNetMetricsByTimePeriodResponse()
             {
-                Response = new List<string>()
+                Response = new List<DotNetMetricDto>()
             };
             foreach (var metrics in result)
             {
-                response.Response.Add($"Date: {DateTimeOffset.FromUnixTimeSeconds(metrics.Time)}    Metric: {metrics.Value}");
+                response.Response.Add(new DotNetMetricDto
+                {
+                    Time = DateTimeOffset.FromUnixTimeSeconds(metrics.Time),
+                    Value = metrics.Value,
+                    Id = metrics.Id
+                });
             }
 
             _logger.LogInformation($"Get CPU metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
 
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(response.Response.ToList());
+            return Ok(response);
         }
     }
 }
