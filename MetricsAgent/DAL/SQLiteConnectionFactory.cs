@@ -6,7 +6,7 @@ using System.Data.SQLite;
 
 namespace MetricsAgent.DAL
 {
-    public class SQLliteConnection
+    public class SQLiteConnectionFactory
     {
         private const string ConnectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
         public SQLiteConnection Connect()

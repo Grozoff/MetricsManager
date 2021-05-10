@@ -30,7 +30,7 @@ namespace MetricsAgent
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<SQLliteConnection>();
+            services.AddSingleton<SQLiteConnectionFactory>();
             ConfigureSqlLiteConnection(services);
             services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
@@ -40,8 +40,8 @@ namespace MetricsAgent
         }
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
-            const string connectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
-            var connection = new SQLiteConnection(connectionString);
+            var connect = new SQLiteConnectionFactory();
+            var connection = new SQLiteConnection(connect.Connect());
             connection.Open();
             PrepareSchema(connection);
         }
