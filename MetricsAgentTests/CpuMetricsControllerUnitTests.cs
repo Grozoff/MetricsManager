@@ -12,32 +12,34 @@ using MetricsAgent.DAL.Models;
 
 namespace MetricsManagerTests
 {
-    public class HddMetricsControllerUnitTests
+    public class CpuMetricsControllerUnitTests
     {
-        private readonly HddMetricsController _controller;
-        private readonly Mock<IHddMetricsRepository> _moq;
+        private readonly CpuMetricsController _controller;
+        private readonly Mock<ICpuMetricsRepository> _moq;
 
-        public HddMetricsControllerUnitTests()
+        public CpuMetricsControllerUnitTests()
         {
-            _moq = new Mock<IHddMetricsRepository>();
-            var logMoq = new Mock<ILogger<HddMetricsController>>();
-            _controller = new HddMetricsController(_moq.Object, logMoq.Object);
+            _moq = new Mock<ICpuMetricsRepository>();
+            var logMoq = new Mock<ILogger<CpuMetricsController>>();
+            _controller = new CpuMetricsController(_moq.Object, logMoq.Object);
         }
 
         [Fact]
         public void GetMetrics_ReturnsOk()
         {
             //Arrange
+            
             var fromTime = DateTimeOffset.FromUnixTimeSeconds(0);
             var toTime = DateTimeOffset.FromUnixTimeSeconds(100);
-            _moq.Setup(repository => repository.GetByTimePeriod(fromTime, toTime)).Returns(new List<HddMetric>()).Verifiable();
-            HddMetricRequest request = new HddMetricRequest(fromTime, toTime);
+            _moq.Setup(repository => repository.GetByTimePeriod(fromTime, toTime)).Returns(new List<CpuMetric>()).Verifiable();
+            CpuMetricRequest request = new CpuMetricRequest(fromTime, toTime);
 
             //Act
             var result = _controller.GetMetrics(request);
 
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
+            
         }
     }
 }

@@ -4,6 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MetricsAgent.DAL.Interfaces;
+using Microsoft.Extensions.Logging;
+using MetricsAgent.DAL.Models;
+using MetricsAgent.Controllers.Responses;
+using MetricsAgent.Controllers.Requests;
 
 namespace MetricsAgent.Controllers
 {
@@ -11,10 +16,36 @@ namespace MetricsAgent.Controllers
     [ApiController]
     public class HddMetricsController : ControllerBase
     {
-        [HttpGet("left")]
-        public IActionResult GetLeftSpace([FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
+        private readonly IHddMetricsRepository _repository;
+        private readonly ILogger<HddMetricsController> _logger;
+
+        public HddMetricsController(IHddMetricsRepository repository, ILogger<HddMetricsController> logger)
         {
-            return Ok();
+            _repository = repository;
+            _logger = logger;
+        }
+
+        [HttpGet("left/from/{fromTime}/to/{toTime}")]
+        public IActionResult GetMetrics([FromRoute] HddMetricRequest request)
+        {
+            var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
+            var response = new HddMetricsByTimePeriodResponse()
+            {
+                Response = new List<HddMetricDto>()
+            };
+            foreach (var metrics in result)
+            {
+                response.Response.Add(new HddMetricDto
+                {
+                    Time = DateTimeOffset.FromUnixTimeSeconds(metrics.Time),
+                    Value = metrics.Value,
+                    Id = metrics.Id
+                });
+            }
+
+            _logger.LogInformation($"Get CPU metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
+
+            return Ok(response);
         }
     }
 }
