@@ -7,6 +7,12 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class RamMetricsByTimePeriodResponse
     {
-        public List<string> Response { get; set; }
+        public List<RamMetricDto> Response { get; set; }
+    }
+    public class RamMetricDto
+    {
+        public int Id { get; set; }
+        public DateTimeOffset Time { get; set; }
+        public int Value { get; set; }
     }
 }

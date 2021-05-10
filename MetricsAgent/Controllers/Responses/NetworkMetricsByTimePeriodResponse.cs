@@ -7,6 +7,12 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class NetworkMetricsByTimePeriodResponse
     {
-        public List<string> Response { get; set; }
+        public List<NetworkMetricDto> Response { get; set; }
+    }
+    public class NetworkMetricDto
+    {
+        public int Id { get; set; }
+        public DateTimeOffset Time { get; set; }
+        public int Value { get; set; }
     }
 }

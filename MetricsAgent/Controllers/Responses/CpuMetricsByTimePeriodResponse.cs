@@ -7,6 +7,12 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class CpuMetricsByTimePeriodResponse
     {
-        public List<string> Response { get; set; }
+        public List<CpuMetricDto> Response { get; set; }
+    }
+    public class CpuMetricDto
+    {
+        public int Id { get; set; }
+        public DateTimeOffset Time { get; set; }
+        public int Value { get; set; }
     }
 }
