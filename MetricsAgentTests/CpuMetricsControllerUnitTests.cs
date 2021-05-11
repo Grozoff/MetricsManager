@@ -38,8 +38,7 @@ namespace MetricsManagerTests
             var result = _controller.GetMetrics(request);
 
             // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
-            
+            _ = Assert.IsAssignableFrom<IActionResult>(result);           
         }
     }
 }

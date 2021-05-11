@@ -11,7 +11,6 @@ namespace MetricsAgent.Controllers.Responses
     }
     public class CpuMetricDto
     {
-        public int Id { get; set; }
         public DateTimeOffset Time { get; set; }
         public int Value { get; set; }
     }

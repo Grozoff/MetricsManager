@@ -38,8 +38,7 @@ namespace MetricsAgent.Controllers
                 response.Response.Add(new NetworkMetricDto
                 {
                     Time = DateTimeOffset.FromUnixTimeSeconds(metrics.Time),
-                    Value = metrics.Value,
-                    Id = metrics.Id
+                    Value = metrics.Value
                 });
             }
 
