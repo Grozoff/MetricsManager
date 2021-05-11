@@ -1,10 +1,9 @@
-﻿using MetricsAgent.DAL.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Data.SQLite;
+using Dapper;
 using MetricsAgent.DAL.Interfaces;
+using MetricsAgent.DAL.Models;
 
 namespace MetricsAgent.DAL.Repository
 {
@@ -15,48 +14,29 @@ namespace MetricsAgent.DAL.Repository
         public CpuMetricsRepository(SQLiteConnectionFactory connection)
         {
             _connection = connection;
+            SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
         }
 
         public void Create(CpuMetric item)
-        {          
+        {
             using var connection = _connection.Connect();
-            using var cmd = new SQLiteCommand(connection);
-            cmd.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(@value, @time)";
-            cmd.Parameters.AddWithValue("@value", item.Value);
-            cmd.Parameters.AddWithValue("@time", item.Time);
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
+            connection.Execute("INSERT INTO cpumetrics(value, time) VALUES(@value, @time)",
+                new
+                {
+                    value = item.Value,
+                    time = item.Time
+                });
         }
 
         public IList<CpuMetric> GetByTimePeriod(DateTimeOffset from, DateTimeOffset to)
         {
-            var fromSeconds = from.ToUnixTimeSeconds();
-            var toSeconds = to.ToUnixTimeSeconds();
-
             using var connection = _connection.Connect();
-            using var cmd = new SQLiteCommand(connection);
-            cmd.CommandText = "SELECT * FROM cpumetrics WHERE (time > @fromTime) and (time < @toTime)";
-            cmd.Parameters.AddWithValue("@fromTime", fromSeconds);
-            cmd.Parameters.AddWithValue("@toTime", toSeconds);
-            cmd.Prepare();
-
-            connection.Open();
-
-            var returnList = new List<CpuMetric>();
-            using var reader = cmd.ExecuteReader();
-            
-            while (reader.Read())
-            {
-                returnList.Add(new CpuMetric()
+            return connection.Query<CpuMetric>("SELECT * FROM cpumetrics WHERE (time > @fromTime) and (time < @toTime)",
+                new
                 {
-                    Id = reader.GetInt32(0),
-                    Value = reader.GetInt32(1),
-                    Time = reader.GetInt64(2)
-                });
-            }
-            connection.Close();
-
-            return returnList;
-        }        
+                    fromTime = from.ToUnixTimeSeconds(),
+                    toTime = to.ToUnixTimeSeconds()
+                }).ToList();
+        }
     }
 }
