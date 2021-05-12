@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MetricsAgent.DAL.Interfaces;
-using Microsoft.Extensions.Logging;
-using MetricsAgent.DAL.Models;
-using MetricsAgent.Controllers.Responses;
+﻿using AutoMapper;
 using MetricsAgent.Controllers.Requests;
-using AutoMapper;
+using MetricsAgent.Controllers.Responses;
+using MetricsAgent.DAL.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace MetricsAgent.Controllers
 {
