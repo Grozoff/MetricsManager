@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.Controllers.Requests;
 using MetricsAgent.DAL.Models;
+using AutoMapper;
+using MetricsAgent.Controllers.Responses;
 
 namespace MetricsManagerTests
 {
@@ -16,12 +18,15 @@ namespace MetricsManagerTests
     {
         private readonly RamMetricsController _controller;
         private readonly Mock<IRamMetricsRepository> _moq;
+        private readonly IMapper _mapper;
 
         public RamMetricsControllerUnitTests()
         {
             _moq = new Mock<IRamMetricsRepository>();
             var logMoq = new Mock<ILogger<RamMetricsController>>();
-            _controller = new RamMetricsController(_moq.Object, logMoq.Object);
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<RamMetric, RamMetricDto>());
+            _mapper = config.CreateMapper();
+            _controller = new RamMetricsController(_moq.Object, logMoq.Object, _mapper);
         }
 
         [Fact]

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.Controllers.Requests;
 using MetricsAgent.DAL.Models;
+using AutoMapper;
+using MetricsAgent.Controllers.Responses;
 
 namespace MetricsManagerTests
 {
@@ -16,12 +18,15 @@ namespace MetricsManagerTests
     {
         private readonly NetworkMetricsController _controller;
         private readonly Mock<INetworkMetricsRepository> _moq;
+        private readonly IMapper _mapper;
 
         public NetworkMetricsControllerUnitTests()
         {
             _moq = new Mock<INetworkMetricsRepository>();
             var logMoq = new Mock<ILogger<NetworkMetricsController>>();
-            _controller = new NetworkMetricsController(_moq.Object, logMoq.Object);
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<NetworkMetric, NetworkMetricDto>());
+            _mapper = config.CreateMapper();
+            _controller = new NetworkMetricsController(_moq.Object, logMoq.Object, _mapper);
         }
 
         [Fact]

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.Controllers.Requests;
 using MetricsAgent.DAL.Models;
+using AutoMapper;
+using MetricsAgent.Controllers.Responses;
 
 namespace MetricsManagerTests
 {
@@ -16,12 +18,15 @@ namespace MetricsManagerTests
     {
         private readonly CpuMetricsController _controller;
         private readonly Mock<ICpuMetricsRepository> _moq;
+        private readonly IMapper _mapper;
 
         public CpuMetricsControllerUnitTests()
         {
             _moq = new Mock<ICpuMetricsRepository>();
             var logMoq = new Mock<ILogger<CpuMetricsController>>();
-            _controller = new CpuMetricsController(_moq.Object, logMoq.Object);
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<CpuMetric, CpuMetricDto>());
+            _mapper = config.CreateMapper();
+            _controller = new CpuMetricsController(_moq.Object, logMoq.Object, _mapper);
         }
 
         [Fact]
