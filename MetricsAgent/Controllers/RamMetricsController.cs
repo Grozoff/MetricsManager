@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MetricsAgent.DAL.Models;
 using MetricsAgent.Controllers.Responses;
 using MetricsAgent.Controllers.Requests;
+using AutoMapper;
 
 namespace MetricsAgent.Controllers
 {
@@ -18,11 +19,13 @@ namespace MetricsAgent.Controllers
     {
         private readonly IRamMetricsRepository _repository;
         private readonly ILogger<RamMetricsController> _logger;
+        private readonly IMapper _mapper;
 
-        public RamMetricsController(IRamMetricsRepository repository, ILogger<RamMetricsController> logger)
+        public RamMetricsController(IRamMetricsRepository repository, ILogger<RamMetricsController> logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("available/from/{fromTime}/to/{toTime}")]
@@ -35,11 +38,7 @@ namespace MetricsAgent.Controllers
             };
             foreach (var metrics in result)
             {
-                response.Response.Add(new RamMetricDto
-                {
-                    Time = DateTimeOffset.FromUnixTimeSeconds(metrics.Time),
-                    Value = metrics.Value
-                });
+                response.Response.Add(_mapper.Map<RamMetricDto>(metrics));
             }
 
             _logger.LogInformation($"Get CPU metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
