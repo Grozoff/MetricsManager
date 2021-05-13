@@ -52,11 +52,11 @@ namespace MetricsAgent
             command.ExecuteNonQuery();
             command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, value INT, time INT64)";
             command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(40, 100000)";
+            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(45, 100000)";
             command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(10, 200000)";
+            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(14, 200000)";
             command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(14, 300000)";
+            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(19, 300000)";
             command.ExecuteNonQuery();
 
             command.CommandText = "DROP TABLE IF EXISTS dotnetmetrics";
