@@ -19,6 +19,5 @@ namespace MetricsAgent.Jobs
         }
 
         public void ReturnJob(IJob job) { }
-
     }
 }
