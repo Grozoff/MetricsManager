@@ -23,7 +23,7 @@ namespace MetricsAgent.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("available/from/{fromTime}/to/{toTime}")]
+        [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics([FromRoute] RamMetricRequest request)
         {
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);

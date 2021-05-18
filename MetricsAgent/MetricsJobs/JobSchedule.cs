@@ -15,6 +15,5 @@ namespace MetricsAgent.Jobs
 
         public Type JobType { get; }
         public string CronExpression { get; }
-
     }
 }

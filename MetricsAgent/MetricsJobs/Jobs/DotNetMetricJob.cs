@@ -7,26 +7,24 @@ using System.Threading.Tasks;
 
 namespace MetricsAgent.Jobs
 {
-    [DisallowConcurrentExecution]
-    public class CpuMetricJob : IJob
+    public class DotNetMetricJob : IJob
     {
-        private readonly ICpuMetricsRepository _repository;
+        private readonly IDotNetMetricsRepository _repository;
         private readonly PerformanceCounter _counter;
 
-        public CpuMetricJob(ICpuMetricsRepository repository)
+        public DotNetMetricJob(IDotNetMetricsRepository repository)
         {
             _repository = repository;
-            _counter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            _counter = new PerformanceCounter(".NET CLR Memory", "% Time in GC", "_Global_");
         }
         public Task Execute(IJobExecutionContext context)
         {
             var cpuUsageInPercents = Convert.ToInt32(_counter.NextValue());
             var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            _repository.Create(new CpuMetric { Time = time, Value = cpuUsageInPercents });
+            _repository.Create(new DotNetMetric { Time = time, Value = cpuUsageInPercents });
 
             return Task.CompletedTask;
-
         }
     }
 }

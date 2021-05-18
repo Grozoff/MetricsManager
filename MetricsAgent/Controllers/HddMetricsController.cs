@@ -23,7 +23,7 @@ namespace MetricsAgent.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("left/from/{fromTime}/to/{toTime}")]
+        [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetrics([FromRoute] HddMetricRequest request)
         {
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
