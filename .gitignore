@@ -364,4 +364,4 @@ FodyWeavers.xsd
 
 # Data Bases.
 # Data Bases
-metrics.db
+*.db
