@@ -8,16 +8,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Data.SQLite;
+using FluentMigrator.Runner;
+using Quartz.Spi;
+using Quartz;
+using MetricsAgent.Jobs;
+using Quartz.Impl;
 
 namespace MetricsAgent
 {
     public class Startup
     {
+        private const string ConnectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -35,76 +40,35 @@ namespace MetricsAgent
             var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
             var mapper = mapperConfiguration.CreateMapper();
             services.AddSingleton(mapper);
+            services.AddSingleton(new SQLiteConnectionFactory(ConnectionString));
+
+            services.AddFluentMigratorCore()
+                  .ConfigureRunner(rb => rb
+                    .AddSQLite()
+                    .WithGlobalConnectionString(ConnectionString)
+                    .ScanIn(typeof(Startup).Assembly).For.Migrations())
+                  .AddLogging(lb => lb
+                    .AddFluentMigratorConsole());
+
+            services.AddSingleton<IJobFactory, SingletonJobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+
+            services.AddSingleton<CpuMetricJob>();
+            services.AddSingleton(new JobSchedule(
+                jobType: typeof(CpuMetricJob),
+                cronExpression: "0/5 * * * * ?"));
+
+            services.AddHostedService<QuartzHostedService>();
         }
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
-            var connect = new SQLiteConnectionFactory();
-            var connection = new SQLiteConnection(connect.Connect());
+            var connection = new SQLiteConnection(ConnectionString);
             connection.Open();
-            PrepareSchema(connection);
+            services.AddSingleton(connection);
         }
 
-        private void PrepareSchema(SQLiteConnection connection)
-        {
-            using var command = new SQLiteCommand(connection);
-
-            command.CommandText = "DROP TABLE IF EXISTS cpumetrics";
-            command.ExecuteNonQuery();
-            command.CommandText = @"CREATE TABLE cpumetrics(id INTEGER PRIMARY KEY, value INT, time INT64)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(45, 100000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(14, 200000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO cpumetrics(value, time) VALUES(19, 300000)";
-            command.ExecuteNonQuery();
-
-            command.CommandText = "DROP TABLE IF EXISTS dotnetmetrics";
-            command.ExecuteNonQuery();
-            command.CommandText = @"CREATE TABLE dotnetmetrics(id INTEGER PRIMARY KEY, value INT, time INT64)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO dotnetmetrics(value, time) VALUES(340, 100000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO dotnetmetrics(value, time) VALUES(110, 200000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO dotnetmetrics(value, time) VALUES(814, 300000)";
-            command.ExecuteNonQuery();
-
-            command.CommandText = "DROP TABLE IF EXISTS hddmetrics";
-            command.ExecuteNonQuery();
-            command.CommandText = @"CREATE TABLE hddmetrics(id INTEGER PRIMARY KEY, value INT, time INT64)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO hddmetrics(value, time) VALUES(490, 100000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO hddmetrics(value, time) VALUES(170, 200000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO hddmetrics(value, time) VALUES(184, 300000)";
-            command.ExecuteNonQuery();
-
-            command.CommandText = "DROP TABLE IF EXISTS networkmetrics";
-            command.ExecuteNonQuery();
-            command.CommandText = @"CREATE TABLE networkmetrics(id INTEGER PRIMARY KEY, value INT, time INT64)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO networkmetrics(value, time) VALUES(406, 100000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO networkmetrics(value, time) VALUES(105, 200000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO networkmetrics(value, time) VALUES(144, 300000)";
-            command.ExecuteNonQuery();
-
-            command.CommandText = "DROP TABLE IF EXISTS rammetrics";
-            command.ExecuteNonQuery();
-            command.CommandText = @"CREATE TABLE rammetrics(id INTEGER PRIMARY KEY, value INT, time INT64)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO rammetrics(value, time) VALUES(407, 100000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO rammetrics(value, time) VALUES(109, 200000)";
-            command.ExecuteNonQuery();
-            command.CommandText = "INSERT INTO rammetrics(value, time) VALUES(148, 300000)";
-            command.ExecuteNonQuery();
-        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
             if (env.IsDevelopment())
             {
@@ -121,6 +85,8 @@ namespace MetricsAgent
             {
                 endpoints.MapControllers();
             });
+
+            migrationRunner.MigrateUp();
         }
     }
 }
