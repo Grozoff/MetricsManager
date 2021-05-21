@@ -11,13 +11,13 @@ namespace MetricsManager.Controllers
     [ApiController]
     public class HddMetricsController : ControllerBase
     {
-        [HttpGet("left/agent/{agentId}")]
+        [HttpGet("agent/{agentId}")]
         public IActionResult GetMetricsFromAgent([FromRoute] int agentId, [FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
         {
             return Ok();
         }
 
-        [HttpGet("left/cluster")]
+        [HttpGet("cluster")]
         public IActionResult GetMetricsFromAllCluster([FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
         {
             return Ok();
