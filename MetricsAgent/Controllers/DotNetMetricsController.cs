@@ -5,6 +5,7 @@ using MetricsAgent.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MetricsAgent.Controllers
 {
@@ -24,21 +25,16 @@ namespace MetricsAgent.Controllers
         }
 
         [HttpGet("from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetrics([FromRoute] DotNetMetricRequest request)
+        public DotNetMetricsByTimePeriodResponse GetMetrics([FromRoute] DotNetMetricRequest request)
         {
+            _logger.LogInformation($"Get DotNet metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
+
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
-            var response = new DotNetMetricsByTimePeriodResponse()
+            return new DotNetMetricsByTimePeriodResponse()
             {
-                Response = new List<DotNetMetricDto>()
+                Response = result.Select(_mapper.Map<DotNetMetricDto>)
             };
-            foreach (var metrics in result)
-            {
-                response.Response.Add(_mapper.Map<DotNetMetricDto>(metrics));
-            }
 
-            _logger.LogInformation($"Get CPU metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
-
-            return Ok(response);
         }
     }
 }

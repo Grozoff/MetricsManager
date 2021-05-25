@@ -5,7 +5,7 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class NetworkMetricsByTimePeriodResponse
     {
-        public List<NetworkMetricDto> Response { get; set; }
+        public IEnumerable<NetworkMetricDto> Response { get; set; }
     }
     public class NetworkMetricDto
     {

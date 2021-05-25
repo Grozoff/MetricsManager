@@ -5,7 +5,7 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class RamMetricsByTimePeriodResponse
     {
-        public List<RamMetricDto> Response { get; set; }
+        public IEnumerable<RamMetricDto> Response { get; set; }
     }
     public class RamMetricDto
     {

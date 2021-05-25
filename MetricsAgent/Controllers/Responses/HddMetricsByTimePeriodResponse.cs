@@ -5,7 +5,7 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class HddMetricsByTimePeriodResponse
     {
-        public List<HddMetricDto> Response { get; set; }
+        public IEnumerable<HddMetricDto> Response { get; set; }
     }
     public class HddMetricDto
     {

@@ -5,7 +5,7 @@ namespace MetricsAgent.Controllers.Responses
 {
     public class CpuMetricsByTimePeriodResponse
     {
-        public List<CpuMetricDto> Response { get; set; }
+        public IEnumerable<CpuMetricDto> Response { get; set; }
     }
     public class CpuMetricDto
     {
