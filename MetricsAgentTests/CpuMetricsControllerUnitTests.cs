@@ -11,6 +11,7 @@ using MetricsAgent.Controllers.Requests;
 using MetricsAgent.DAL.Models;
 using AutoMapper;
 using MetricsAgent.Controllers.Responses;
+using MetricsManager.Controllers.Responses;
 
 namespace MetricsManagerTests
 {
@@ -43,7 +44,7 @@ namespace MetricsManagerTests
             var result = _controller.GetMetrics(request);
 
             // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);           
+            _ = Assert.IsAssignableFrom<CpuMetricsByTimePeriodResponse>(result);           
         }
     }
 }
