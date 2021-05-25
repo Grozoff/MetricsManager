@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.Spi;
-using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MetricsAgent.Jobs
 {
