@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using MetricsManager.Controllers.Requests;
+using MetricsManager.Controllers.Responses;
+using MetricsManager.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
@@ -11,16 +13,44 @@ namespace MetricsManager.Controllers
     [ApiController]
     public class NetworkMetricsController : ControllerBase
     {
-        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetricsFromAgent([FromRoute] int agentId, [FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
+        private readonly INetworkMetricsRepository _repository;
+        private readonly ILogger<NetworkMetricsController> _logger;
+        private readonly IMapper _mapper;
+
+        public NetworkMetricsController(INetworkMetricsRepository repository, ILogger<NetworkMetricsController> logger, IMapper mapper)
         {
-            return Ok();
+            _repository = repository;
+            _logger = logger;
+            _mapper = mapper;
+        }
+
+        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
+        public NetworkGetMetricsFromAgentResponse GetMetricsFromAgent([FromRoute] NetworkMetricFromAgentRequests requests)
+        {
+            _logger.LogInformation(
+                   $"Get Network metrics: From Time = {requests.FromTime} " +
+                   $"To Time = {requests.ToTime} " +
+                   $"from Agent Id = {requests.AgentId}");
+
+            var result = _repository.GetByTimePeriod(requests.FromTime, requests.ToTime, requests.AgentId);
+
+            return new NetworkGetMetricsFromAgentResponse()
+            {
+                Response = result.Select(_mapper.Map<NetworkMetricResponse>)
+            };
         }
 
         [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetricsFromAllCluster([FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
+        public NetworkGetMetricsFromClusterResponse GetMetricsFromAllCluster([FromRoute] NetworkMetricFromClusterRequests requests)
         {
-            return Ok();
+            _logger.LogInformation($"Get Network metrics: From Time = {requests.FromTime} To Time = {requests.ToTime}");
+
+            var result = _repository.GetByTimePeriod(requests.FromTime, requests.ToTime);
+
+            return new NetworkGetMetricsFromClusterResponse()
+            {
+                Response = result.Select(_mapper.Map<NetworkMetricResponse>)
+            };
         }
     }
 }

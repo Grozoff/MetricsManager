@@ -1,5 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using MetricsManager.Controllers.Requests;
+using MetricsManager.Controllers.Responses;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +17,22 @@ namespace MetricsManager.Controllers
     [ApiController]
     public class AgentsController : ControllerBase
     {
-        [HttpPost("register")]
-        public IActionResult RegisterAgent([FromBody] AgentInfo agentInfo)
+        private readonly ILogger<AgentsController> _logger;
+        private readonly IAgentRepository _repository;
+        private readonly IMapper _mapper;
+
+        public AgentsController(IAgentRepository repository, ILogger<AgentsController> logger, IMapper mapper)
         {
+            _repository = repository;
+            _logger = logger;
+            _mapper = mapper;
+        }
+
+        [HttpPost("register")]
+        public IActionResult RegisterAgent([FromBody] AgentRequest agentRequest)
+        {
+            _repository.Create(_mapper.Map<AgentInfo>(agentRequest));
+            _logger.LogInformation("Agent successfully added to database");
             return Ok();
         }
 
@@ -28,11 +47,25 @@ namespace MetricsManager.Controllers
         {
             return Ok();
         }
-        public class AgentInfo
-        {
-            public int AgentId { get; }
 
-            public Uri AgentAddress { get; }
+        [HttpGet("all")]
+        public IActionResult GetAllAgents()
+        {
+            var agents = _repository.GetAll();
+            var response = new AllAgentsResponse()
+            {
+                Agents = new List<AgentResponse>()
+            };
+
+            foreach (var agent in agents)
+            {
+                response.Agents.ToList().Add(new AgentResponse
+                {
+                    Id = agent.Id,
+                    Uri = agent.Uri,                  
+                });
+            }
+            return Ok(response);
         }
     }
 }
