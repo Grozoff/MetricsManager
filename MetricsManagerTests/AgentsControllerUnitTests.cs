@@ -1,31 +1,39 @@
-﻿using MetricsManager.Controllers;
+﻿using AutoMapper;
+using MetricsManager;
+using MetricsManager.Controllers;
+using MetricsManager.Controllers.Requests;
+using MetricsManager.DAL.Interfaces;
+using MetricsManager.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace MetricsManagerTests
 {
     public class AgentsControllerUnitTests
     {
-        private AgentsController controller;
+        private readonly AgentsController _controller;
+        private readonly Mock<IAgentRepository> _moq;
 
         public AgentsControllerUnitTests()
         {
-            controller = new AgentsController();
+            _moq = new Mock<IAgentRepository>();
+            var logMoq = new Mock<ILogger<AgentsController>>();
+            var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            _controller = new AgentsController(_moq.Object, logMoq.Object, mapper);
         }
 
         [Fact]
         public void RegisterAgent_ReturnsOk()
         {
             //Arrange
-            var agentInfo = new AgentsController.AgentInfo();
-
+            _moq.Setup(repo => repo.GetAll()).Returns(new List<AgentInfo>()).Verifiable();
             //Act
-            var result = controller.RegisterAgent(agentInfo);
-
-            // Assert
+            var result = _controller.RegisterAgent(new AgentRequest());
+            //Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
         }
         [Fact]
@@ -35,7 +43,7 @@ namespace MetricsManagerTests
             var agentId = 1;
 
             //Act
-            var result = controller.EnableAgentById(agentId);
+            var result = _controller.EnableAgentById(agentId);
 
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
@@ -47,7 +55,19 @@ namespace MetricsManagerTests
             var agentId = 1;
 
             //Act
-            var result = controller.DisableAgentById(agentId);
+            var result = _controller.DisableAgentById(agentId);
+
+            // Assert
+            _ = Assert.IsAssignableFrom<IActionResult>(result);
+        }
+        [Fact]
+        public void GetRegisteredAgents_ReturnsEmptyEnumerable()
+        {
+            //Arrange
+            _moq.Setup(repo => repo.GetAll()).Returns(new List<AgentInfo>()).Verifiable();
+
+            //Act
+            var result = _controller.GetAllAgents();
 
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
