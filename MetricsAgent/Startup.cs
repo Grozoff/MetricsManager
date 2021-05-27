@@ -44,7 +44,7 @@ namespace MetricsAgent
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "API сервиса агента сбора метрик",
+                    Title = "API агента сбора метрик",
                     Description = "Тут можно поиграть с api нашего сервиса",
                     Contact = new OpenApiContact
                     {
@@ -134,7 +134,7 @@ namespace MetricsAgent
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API сервиса агента сбора метрик");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API агента сбора метрик");
                 c.RoutePrefix = string.Empty;
             });
         }
