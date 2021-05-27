@@ -13,6 +13,10 @@ using Quartz.Spi;
 using Quartz;
 using MetricsAgent.Jobs;
 using Quartz.Impl;
+using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace MetricsAgent
 {
@@ -29,8 +33,30 @@ namespace MetricsAgent
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
             services.AddSingleton<SQLiteConnectionFactory>();
             ConfigureSqlLiteConnection(services);
+
+            services.AddSwaggerGen();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "API сервиса агента сбора метрик",
+                    Description = "Тут можно поиграть с api нашего сервиса",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Grozov Sergey",
+                        Url = new Uri("https://github.com/Grozoff"),
+                    }
+                });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
             services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
             services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
@@ -103,6 +129,14 @@ namespace MetricsAgent
             });
 
             migrationRunner.MigrateUp();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API сервиса агента сбора метрик");
+                c.RoutePrefix = string.Empty;
+            });
         }
     }
 }

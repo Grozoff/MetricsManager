@@ -4,7 +4,6 @@ using MetricsAgent.Controllers.Responses;
 using MetricsAgent.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MetricsAgent.Controllers
@@ -24,6 +23,13 @@ namespace MetricsAgent.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получает метрики HDD на заданном диапазоне времени
+        /// </summary>
+        /// <param name="request">Запрос промежутка времени fromTime/toTime в формате DateTimeOffset</param>
+        /// <returns>Список метрик, которые были сохранены в заданном диапазоне времени</returns>
+        /// <response code="201">Если все хорошо</response>
+        /// <response code="400">Eсли передали не правильные параметры</response>
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public HddMetricsByTimePeriodResponse GetMetrics([FromRoute] HddMetricRequest request)
         {
