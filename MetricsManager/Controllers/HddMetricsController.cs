@@ -24,7 +24,7 @@ namespace MetricsManager.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("agent/{agentId}")]
+        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public HddGetMetricsFromAgentResponse GetMetricsFromAgent([FromRoute] HddMetricFromAgentRequests requests)
         {
             _logger.LogInformation(
@@ -40,7 +40,7 @@ namespace MetricsManager.Controllers
             };
         }
 
-        [HttpGet("cluster")]
+        [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
         public HddGetMetricsFromClusterResponse GetMetricsFromAllCluster([FromRoute] HddMetricFromClusterRequests requests)
         {
             _logger.LogInformation($"Get Hdd metrics: From Time = {requests.FromTime} To Time = {requests.ToTime}");

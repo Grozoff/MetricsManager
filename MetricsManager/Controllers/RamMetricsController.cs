@@ -24,7 +24,7 @@ namespace MetricsManager.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("agent/{agentId}")]
+        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public RamGetMetricsFromAgentResponse GetMetricsFromAgent([FromRoute] RamMetricFromAgentRequests requests)
         {
             _logger.LogInformation(
@@ -40,7 +40,7 @@ namespace MetricsManager.Controllers
             };
         }
 
-        [HttpGet("cluster")]
+        [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
         public RamGetMetricsFromClusterResponse GetMetricsFromAllCluster([FromRoute] RamMetricFromClusterRequests requests)
         {
             _logger.LogInformation($"Get Ram metrics: From Time = {requests.FromTime} To Time = {requests.ToTime}");
