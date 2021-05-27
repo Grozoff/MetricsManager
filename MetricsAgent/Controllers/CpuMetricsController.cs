@@ -25,8 +25,8 @@ namespace MetricsAgent.Controllers
         /// <summary>
         /// Получает метрики CPU на заданном диапазоне времени
         /// </summary>
-        /// <param name="request">Запрос промежутка времени fromTime/toTime в формате DateTimeOffset</param>
-        /// <returns>Список метрик, которые были сохранены в заданном диапазоне времени</returns>
+        /// <param name="request">Диапазон времени</param>
+        /// <returns>Список метрик</returns>
         /// <response code="201">Если все хорошо</response>
         /// <response code="400">Eсли передали не правильные параметры</response>
         [HttpGet("from/{fromTime}/to/{toTime}")]
