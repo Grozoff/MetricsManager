@@ -26,6 +26,11 @@ namespace MetricsManager.Controllers
 
         public ILogger<DotNetMetricsController> Logger => _logger;
 
+        /// <summary>
+        /// Получает метрики DotNet на заданном диапазоне времени по Id агента
+        /// </summary>
+        /// <param name="requests">Id агента и диапазон времени</param>
+        /// <returns>Список метрик с одного агента</returns>
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public DotNetGetMetricsFromAgentResponse GetMetricsFromAgent([FromRoute] DotNetMetricFromAgentRequests requests)
         {
@@ -42,6 +47,11 @@ namespace MetricsManager.Controllers
             };          
         }
 
+        /// <summary>
+        /// Получает метрики DotNet на заданном диапазоне времени со всех агентов
+        /// </summary>
+        /// <param name="requests">Диапазон времени</param>
+        /// <returns>Список метрик со всех агентов</returns>
         [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
         public DotNetGetMetricsFromClusterResponse GetMetricsFromAllCluster([FromRoute] DotNetMetricFromClusterRequests requests)
         {

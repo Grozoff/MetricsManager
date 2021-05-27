@@ -24,7 +24,12 @@ namespace MetricsManager.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("agent/{agentId}")]
+        /// <summary>
+        /// Получает метрики HDD на заданном диапазоне времени по Id агента
+        /// </summary>
+        /// <param name="requests">Id агента и диапазон времени</param>
+        /// <returns>Список метрик с одного агента</returns>
+        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public HddGetMetricsFromAgentResponse GetMetricsFromAgent([FromRoute] HddMetricFromAgentRequests requests)
         {
             _logger.LogInformation(
@@ -40,7 +45,12 @@ namespace MetricsManager.Controllers
             };
         }
 
-        [HttpGet("cluster")]
+        /// <summary>
+        /// Получает метрики HDD на заданном диапазоне времени со всех агентов
+        /// </summary>
+        /// <param name="requests">Диапазон времени</param>
+        /// <returns>Список метрик со всех агентов</returns>
+        [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
         public HddGetMetricsFromClusterResponse GetMetricsFromAllCluster([FromRoute] HddMetricFromClusterRequests requests)
         {
             _logger.LogInformation($"Get Hdd metrics: From Time = {requests.FromTime} To Time = {requests.ToTime}");

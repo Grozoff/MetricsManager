@@ -67,7 +67,7 @@ namespace MetricsManagerTests
             _moq.Setup(repo => repo.GetAll()).Returns(new List<AgentInfo>()).Verifiable();
 
             //Act
-            var result = _controller.GetAllAgents();
+            var result = _controller.GetAllRegisteredAgents();
 
             // Assert
             _ = Assert.IsAssignableFrom<IActionResult>(result);
