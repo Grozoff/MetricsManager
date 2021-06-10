@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 
 namespace MetricsAgent.DAL
 {
     public class SQLiteConnectionFactory
     {
-        private const string ConnectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
+        private readonly string _connectionString;
+        public SQLiteConnectionFactory()
+        {
+
+        }
+        public SQLiteConnectionFactory(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
         public SQLiteConnection Connect()
         {
-            return new SQLiteConnection(ConnectionString);
+            return new SQLiteConnection(_connectionString);
         }
     }
 }

@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MetricsAgent.DAL.Interfaces;
-using Microsoft.Extensions.Logging;
-using MetricsAgent.DAL.Models;
-using MetricsAgent.Controllers.Responses;
+﻿using AutoMapper;
 using MetricsAgent.Controllers.Requests;
+using MetricsAgent.Controllers.Responses;
+using MetricsAgent.DAL.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace MetricsAgent.Controllers
 {
@@ -18,34 +14,33 @@ namespace MetricsAgent.Controllers
     {
         private readonly IHddMetricsRepository _repository;
         private readonly ILogger<HddMetricsController> _logger;
+        private readonly IMapper _mapper;
 
-        public HddMetricsController(IHddMetricsRepository repository, ILogger<HddMetricsController> logger)
+        public HddMetricsController(IHddMetricsRepository repository, ILogger<HddMetricsController> logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        [HttpGet("left/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetrics([FromRoute] HddMetricRequest request)
+        /// <summary>
+        /// Получает метрики HDD на заданном диапазоне времени
+        /// </summary>
+        /// <param name="request">Диапазон времени</param>
+        /// <returns>Список метрик</returns>
+        /// <response code="201">Если все хорошо</response>
+        /// <response code="400">Eсли передали не правильные параметры</response>
+        [HttpGet("from/{fromTime}/to/{toTime}")]
+        public HddMetricsByTimePeriodResponse GetMetrics([FromRoute] HddMetricRequest request)
         {
+            _logger.LogInformation($"Get Hdd metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
+
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
-            var response = new HddMetricsByTimePeriodResponse()
+
+            return new HddMetricsByTimePeriodResponse()
             {
-                Response = new List<HddMetricDto>()
+                Response = result.Select(_mapper.Map<HddMetricDto>)
             };
-            foreach (var metrics in result)
-            {
-                response.Response.Add(new HddMetricDto
-                {
-                    Time = DateTimeOffset.FromUnixTimeSeconds(metrics.Time),
-                    Value = metrics.Value,
-                    Id = metrics.Id
-                });
-            }
-
-            _logger.LogInformation($"Get CPU metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
-
-            return Ok(response);
         }
     }
 }

@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MetricsAgent.DAL.Interfaces;
-using Microsoft.Extensions.Logging;
-using MetricsAgent.DAL.Models;
-using MetricsAgent.Controllers.Responses;
+﻿using AutoMapper;
 using MetricsAgent.Controllers.Requests;
+using MetricsAgent.Controllers.Responses;
+using MetricsAgent.DAL.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace MetricsAgent.Controllers
 {
@@ -18,34 +14,33 @@ namespace MetricsAgent.Controllers
     {
         private readonly INetworkMetricsRepository _repository;
         private readonly ILogger<NetworkMetricsController> _logger;
+        private readonly IMapper _mapper;
 
-        public NetworkMetricsController(INetworkMetricsRepository repository, ILogger<NetworkMetricsController> logger)
+        public NetworkMetricsController(INetworkMetricsRepository repository, ILogger<NetworkMetricsController> logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получает метрики Network на заданном диапазоне времени
+        /// </summary>
+        /// <param name="request">Диапазон времени</param>
+        /// <returns>Список метрик</returns>
+        /// <response code="201">Если все хорошо</response>
+        /// <response code="400">Eсли передали не правильные параметры</response>
         [HttpGet("from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetrics([FromRoute] NetworkMetricRequest request)
+        public NetworkMetricsByTimePeriodResponse GetMetrics([FromRoute] NetworkMetricRequest request)
         {
+            _logger.LogInformation($"Get Network metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
+
             var result = _repository.GetByTimePeriod(request.FromTime, request.ToTime);
-            var response = new NetworkMetricsByTimePeriodResponse()
+
+            return new NetworkMetricsByTimePeriodResponse()
             {
-                Response = new List<NetworkMetricDto>()
+                Response = result.Select(_mapper.Map<NetworkMetricDto>)
             };
-            foreach (var metrics in result)
-            {
-                response.Response.Add(new NetworkMetricDto
-                {
-                    Time = DateTimeOffset.FromUnixTimeSeconds(metrics.Time),
-                    Value = metrics.Value,
-                    Id = metrics.Id
-                });
-            }
-
-            _logger.LogInformation($"Get CPU metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
-
-            return Ok(response);
         }
     }
 }

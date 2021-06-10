@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using MetricsManager.Controllers.Requests;
+using MetricsManager.Controllers.Responses;
+using MetricsManager.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
@@ -11,16 +13,54 @@ namespace MetricsManager.Controllers
     [ApiController]
     public class HddMetricsController : ControllerBase
     {
-        [HttpGet("left/agent/{agentId}")]
-        public IActionResult GetMetricsFromAgent([FromRoute] int agentId, [FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
+        private readonly IHddMetricsRepository _repository;
+        private readonly ILogger<HddMetricsController> _logger;
+        private readonly IMapper _mapper;
+
+        public HddMetricsController(IHddMetricsRepository repository, ILogger<HddMetricsController> logger, IMapper mapper)
         {
-            return Ok();
+            _repository = repository;
+            _logger = logger;
+            _mapper = mapper;
         }
 
-        [HttpGet("left/cluster")]
-        public IActionResult GetMetricsFromAllCluster([FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
+        /// <summary>
+        /// Получает метрики HDD на заданном диапазоне времени по Id агента
+        /// </summary>
+        /// <param name="requests">Id агента и диапазон времени</param>
+        /// <returns>Список метрик с одного агента</returns>
+        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
+        public HddGetMetricsFromAgentResponse GetMetricsFromAgent([FromRoute] HddMetricFromAgentRequests requests)
         {
-            return Ok();
+            _logger.LogInformation(
+                   $"Get Hdd metrics: From Time = {requests.FromTime} " +
+                   $"To Time = {requests.ToTime} " +
+                   $"from Agent Id = {requests.AgentId}");
+
+            var result = _repository.GetByTimePeriod(requests.FromTime, requests.ToTime, requests.AgentId);
+
+            return new HddGetMetricsFromAgentResponse()
+            {
+                Response = result.Select(_mapper.Map<HddMetricResponse>)
+            };
+        }
+
+        /// <summary>
+        /// Получает метрики HDD на заданном диапазоне времени со всех агентов
+        /// </summary>
+        /// <param name="requests">Диапазон времени</param>
+        /// <returns>Список метрик со всех агентов</returns>
+        [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
+        public HddGetMetricsFromClusterResponse GetMetricsFromAllCluster([FromRoute] HddMetricFromClusterRequests requests)
+        {
+            _logger.LogInformation($"Get Hdd metrics: From Time = {requests.FromTime} To Time = {requests.ToTime}");
+
+            var result = _repository.GetByTimePeriod(requests.FromTime, requests.ToTime);
+
+            return new HddGetMetricsFromClusterResponse()
+            {
+                Response = result.Select(_mapper.Map<HddMetricResponse>)
+            };
         }
     }
 }

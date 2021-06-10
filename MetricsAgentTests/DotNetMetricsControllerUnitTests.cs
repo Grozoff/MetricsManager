@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.Controllers.Requests;
 using MetricsAgent.DAL.Models;
+using AutoMapper;
+using MetricsAgent.Controllers.Responses;
 
 namespace MetricsManagerTests
 {
@@ -16,12 +18,15 @@ namespace MetricsManagerTests
     {
         private readonly DotNetMetricsController _controller;
         private readonly Mock<IDotNetMetricsRepository> _moq;
+        private readonly IMapper _mapper;
 
         public DotNetMetricsControllerUnitTests()
         {
             _moq = new Mock<IDotNetMetricsRepository>();
             var logMoq = new Mock<ILogger<DotNetMetricsController>>();
-            _controller = new DotNetMetricsController(_moq.Object, logMoq.Object);
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<DotNetMetric, DotNetMetricDto>());
+            _mapper = config.CreateMapper();
+            _controller = new DotNetMetricsController(_moq.Object, logMoq.Object, _mapper);
         }
 
         [Fact]
@@ -37,7 +42,7 @@ namespace MetricsManagerTests
             var result = _controller.GetMetrics(request);
 
             // Assert
-            _ = Assert.IsAssignableFrom<IActionResult>(result);
+            _ = Assert.IsAssignableFrom<DotNetMetricsByTimePeriodResponse>(result);
         }
     }
 }
