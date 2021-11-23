@@ -30,7 +30,7 @@ namespace MetricsAgent.Controllers
         /// <returns>Список метрик</returns>
         /// <response code="201">Если все хорошо</response>
         /// <response code="400">Eсли передали не правильные параметры</response>
-        [HttpGet("from/{fromTime}/to/{toTime}")]
+        [HttpGet("from/{FromTime}/to/{ToTime}")]
         public DotNetMetricsByTimePeriodResponse GetMetrics([FromRoute] DotNetMetricRequest request)
         {
             _logger.LogInformation($"Get DotNet metrics: From Time = {request.FromTime} To Time = {request.ToTime}");
